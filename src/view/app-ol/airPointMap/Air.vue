@@ -50,8 +50,8 @@ export default {
         ctx.shadowBlur = 5;
       })
 
-      this.axios.get(this.dataURL).then(response => {
-        let fts = new GeoJSON().readFeatures(response.data.result)
+      this.axios.get(this.dataURL).then(res => {
+        let fts = new GeoJSON().readFeatures(res.data.result)
         this.source.addFeatures(fts)
       })
     },

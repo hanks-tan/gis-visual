@@ -6,17 +6,17 @@ const app = express()
 let apiRoutes = express.Router()
 app.use('/api', apiRoutes)
 
-// 本地数据处理
+// 本地数据处理, 构造以文件名为本地数据接口
 let getApi = []
-let jsonData = {}
 let jsonFilesList = glob.sync('./src/assets/api/*.json')
 for (let index = 0; index < jsonFilesList.length; index++) {
   let jsonFile = jsonFilesList[index]
-  let dataKey = path.basename(jsonFile).replace('.json', '')
-  let dataObj = {}
-  dataObj[dataKey] = require(jsonFile)
-  jsonData = Object.assign(jsonData, dataObj)
-  getApi.push(dataKey)
+  let data = require(jsonFile)
+  let name = path.basename(jsonFile).split('.')[0]
+  getApi.push({
+    name,
+    data
+  })
 }
 
 module.exports = {
@@ -51,11 +51,10 @@ module.exports = {
     open: true, // 配置自动启动浏览器
     before (app) {
       for (let g = 0; g < getApi.length; g++) {
-        var key = getApi[g]
-        var getData = jsonData[key]
-        app.get('/api/' + key, function (rep, res) {
+        let item = getApi[g]
+        app.get('/api/' + item.name, function (rep, res) {
           res.json({
-            result: getData
+            result: item.data
           })
         })
       }
