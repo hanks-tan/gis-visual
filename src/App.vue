@@ -91,7 +91,7 @@ export default {
 
 <style lang='less'>
   @import url('~bootstrap/less/bootstrap.less');
-  @import url('/src/assets/css/mapview.css');
+  @import url('./assets/css/base.css');
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
