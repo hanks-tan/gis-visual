@@ -2,20 +2,20 @@
 Array.prototype.max = function () {
     return Math.max.apply(null, this)
 }
-Array.prototype.min = function() {
+Array.prototype.min = function () {
     return Math.min.apply(null, this)
 }
-Array.prototype.mean = function() {
+Array.prototype.mean = function () {
     var i, sum
     for(i=0,sum=0;i<this.length;i++)
 	sum += this[i]
     return sum / this.length
 }
-Array.prototype.rep = function(n) {
+Array.prototype.rep = function (n) {
     return Array.apply(null, new Array(n))
     .map(Number.prototype.valueOf, this[0])
 }
-Array.prototype.pip = function(x, y) {
+Array.prototype.pip = function (x, y) {
     var i, j, c = false
     for(i=0,j=this.length-1;i<this.length;j=i++) {
 	if( ((this[i][1]>y) != (this[j][1]>y)) && 
@@ -26,29 +26,29 @@ Array.prototype.pip = function(x, y) {
     return c
 }
 
-var kriging = function() {
+var kriging = function () {
     var kriging = {}
 
     // Matrix algebra
-    kriging_matrix_diag = function(c, n) {
+    var kriging_matrix_diag = function (c, n) {
 	var i, Z = [0].rep(n*n)
 	for(i=0;i<n;i++) Z[i*n+i] = c
 	return Z
     }
-    kriging_matrix_transpose = function(X, n, m) {
+    kriging_matrix_transpose = function (X, n, m) {
 	var i, j, Z = Array(m*n)
 	for(i=0;i<n;i++)
 	    for(j=0;j<m;j++)
 		Z[j*n+i] = X[i*m+j]
 	return Z
     }
-    kriging_matrix_scale = function(X, c, n, m) {
+    kriging_matrix_scale = function (X, c, n, m) {
 	var i, j
 	for(i=0;i<n;i++)
 	    for(j=0;j<m;j++)
 		X[i*m+j] *= c
     }
-    kriging_matrix_add = function(X, Y, n, m) {
+    kriging_matrix_add = function (X, Y, n, m) {
 	var i, j, Z = Array(n*m)
 	for(i=0;i<n;i++)
 	    for(j=0;j<m;j++)
@@ -56,7 +56,7 @@ var kriging = function() {
 	return Z
     }
     // Naive matrix multiplication
-    kriging_matrix_multiply = function(X, Y, n, m, p) {
+    kriging_matrix_multiply = function (X, Y, n, m, p) {
 	var i, j, k, Z = Array(n*p)
 	for(i=0;i<n;i++) {
 	    for(j=0;j<p;j++) {
@@ -68,7 +68,7 @@ var kriging = function() {
 	return Z
     }
     // Cholesky decomposition
-    kriging_matrix_chol = function(X, n) { 
+    kriging_matrix_chol = function (X, n) { 
 	var i, j, k, sum, p = Array(n)
 	for(i=0;i<n;i++) p[i] = X[i*n+i]
 	for(i=0;i<n;i++) {
@@ -86,7 +86,7 @@ var kriging = function() {
 	return true
     }
     // Inversion of cholesky decomposition
-    kriging_matrix_chol2inv = function(X, n) {
+    kriging_matrix_chol2inv = function (X, n) {
 	var i, j, k, sum
 	for(i=0;i<n;i++) {
 	    X[i*n+i] = 1/X[i*n+i]
@@ -114,7 +114,7 @@ var kriging = function() {
 
     }
     // Inversion via gauss-jordan elimination
-    kriging_matrix_solve = function(X, n) {
+    kriging_matrix_solve = function (X, n) {
 	var m = n
 	var b = Array(n*n)
 	var indxc = Array(n)
@@ -190,22 +190,22 @@ var kriging = function() {
     }
 
     // Variogram models
-    kriging_variogram_gaussian = function(h, nugget, range, sill, A) {
+    kriging_variogram_gaussian = function (h, nugget, range, sill, A) {
 	return nugget + ((sill-nugget)/range)*
 	( 1.0 - Math.exp(-(1.0/A)*Math.pow(h/range, 2)) )
     }
-    kriging_variogram_exponential = function(h, nugget, range, sill, A) {
+    kriging_variogram_exponential = function (h, nugget, range, sill, A) {
 	return nugget + ((sill-nugget)/range)*
 	( 1.0 - Math.exp(-(1.0/A) * (h/range)) )
     }
-    kriging_variogram_spherical = function(h, nugget, range, sill, A) {
+    kriging_variogram_spherical = function (h, nugget, range, sill, A) {
 	if(h>range) return nugget + (sill-nugget)/range
 	return nugget + ((sill-nugget)/range)*
 	( 1.5*(h/range) - 0.5*Math.pow(h/range, 3) )
     }
 
     // Train using gaussian processes with bayesian priors
-    kriging.train = function(t, x, y, model, sigma2, alpha, tMax,tMin) {
+    kriging.train = function (t, x, y, model, sigma2, alpha, tMax,tMin) {
 	var variogram = {
 	    t      : t,
 	    x      : x,
@@ -217,13 +217,13 @@ var kriging = function() {
 	    n      : 0
 	}
 	switch(model) {
-	case "gaussian":
+	case 'gaussian':
 	    variogram.model = kriging_variogram_gaussian
 	    break
-	case "exponential":
+	case 'exponential':
 	    variogram.model = kriging_variogram_exponential
 	    break
-	case "spherical":
+	case 'spherical':
 	    variogram.model = kriging_variogram_spherical
 	    break
 	};
@@ -239,7 +239,7 @@ var kriging = function() {
 		    Math.pow(y[i]-y[j], 2), 0.5)
 		distance[k][1] = Math.abs(t[i]-t[j])
 	    }
-	distance.sort(function(a, b) { return a[0] - b[0] })
+	distance.sort(function (a, b) { return a[0] - b[0] })
 	variogram.range = distance[(n*n-n)/2-1][0]
 
 	// Bin lag distance
@@ -278,13 +278,13 @@ var kriging = function() {
 	var A = variogram.A
 	for(i=0;i<n;i++) {
 	    switch(model) {
-	    case "gaussian":
+	    case 'gaussian':
 		X[i*2+1] = 1.0-Math.exp(-(1.0/A)*Math.pow(lag[i]/variogram.range, 2))
 		break
-	    case "exponential":
+	    case 'exponential':
 		X[i*2+1] = 1.0-Math.exp(-(1.0/A)*lag[i]/variogram.range)
 		break
-	    case "spherical":
+	    case 'spherical':
 		X[i*2+1] = 1.5*(lag[i]/variogram.range)-
 		    0.5*Math.pow(lag[i]/variogram.range, 3)
 		break
@@ -359,7 +359,7 @@ var kriging = function() {
     }
 
     // Model prediction
-    kriging.predict = function(x, y, variogram) {
+    kriging.predict = function (x, y, variogram) {
 	var i, k = Array(variogram.n)
 	for(i=0;i<variogram.n;i++)
 	    k[i] = variogram.model(Math.pow(Math.pow(x-variogram.x[i], 2)+
@@ -368,7 +368,7 @@ var kriging = function() {
 				   variogram.sill, variogram.A)
 	return kriging_matrix_multiply(k, variogram.M, 1, variogram.n, 1)[0]
     }
-    kriging.variance = function(x, y, variogram) {
+    kriging.variance = function (x, y, variogram) {
 	var i, k = Array(variogram.n)
 	for(i=0;i<variogram.n;i++)
 	    k[i] = variogram.model(Math.pow(Math.pow(x-variogram.x[i], 2)+
@@ -383,7 +383,7 @@ var kriging = function() {
     }
 
     // Gridded matrices or contour paths
-    kriging.grid = function(polygons, variogram, width) {
+    kriging.grid = function (polygons, variogram, width) {
 	var i, j, k, n = polygons.length
 	if(n==0) return
 	
@@ -450,14 +450,14 @@ var kriging = function() {
 	A.width = width
 	return A
     }
-    kriging.contour = function(value, polygons, variogram) {
+    kriging.contour = function (value, polygons, variogram) {
 
     }
 
     // Plotting on the DOM
-    kriging.plot = function(canvas, grid, xlim, ylim, colors) {
+    kriging.plot = function (canvas, grid, xlim, ylim, colors) {
 	// Clear screen 
-	var ctx = canvas.getContext("2d")
+	var ctx = canvas.getContext('2d')
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
 
 	// Starting boundaries

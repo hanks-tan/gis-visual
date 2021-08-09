@@ -9,26 +9,26 @@ import MapView from '@/components/_public/MapView.vue'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import GeoJSON from 'ol/format/GeoJSON'
-import {View, Overlay} from 'ol'
-import {Style, Fill, Circle} from 'ol/style'
+import { View, Overlay } from 'ol'
+import { Style, Fill, Circle } from 'ol/style'
 
 export default {
-  data(){
-    return{
+  data () {
+    return {
       dataURL: this.BaseURL + '/china_city_aqi',
       view: undefined,
       map: undefined,
-      colors: ['67, 206 ,23', '225, 215, 44', '247, 45, 14', '167, 19, 76'],
+      colors: ['67, 206 ,23', '225, 215, 44', '247, 45, 14', '167, 19, 76']
     }
   },
-  components: {MapView},
-  mounted() {
+  components: { MapView },
+  mounted () {
     this.init()
   },
   methods: {
-    init() {
+    init () {
       this.source = new VectorSource()
-  
+
       let vectorLayer = new VectorLayer({
         source: this.source,
         style: this.createStyle.bind(this)
@@ -37,7 +37,7 @@ export default {
       this.view = new View({
         projection: 'EPSG:4326',
         zoom: 7,
-        center: [106.192619,34.528267]
+        center: [106.192619, 34.528267]
       })
 
       this.map = this.$refs['mapview'].map
@@ -46,8 +46,8 @@ export default {
 
       vectorLayer.on('precompose', evt => {
         let ctx = evt.context
-        ctx.shadowColor  = '#fff'
-        ctx.shadowBlur = 5;
+        ctx.shadowColor = '#fff'
+        ctx.shadowBlur = 5
       })
 
       this.axios.get(this.dataURL).then(res => {
@@ -56,17 +56,17 @@ export default {
       })
     },
 
-    createStyle (feature, resolution){
+    createStyle (feature, resolution) {
       let zoom = this.view.getZoomForResolution(resolution)
-      if(zoom > 5) {
+      if (zoom > 5) {
         let t = this.labelIsExist(feature)
-        if(!t){
+        if (!t) {
           this.showLabel(feature)
-        }else{
+        } else {
           console.log('not...')
         }
         return null
-      }else{
+      } else {
         this.clearLabel()
         return new Style({
           image: new Circle({
@@ -78,26 +78,26 @@ export default {
         })
       }
     },
-  
-    clearLabel(){
+
+    clearLabel () {
       let overlays = this.map.getOverlays()
-      if(overlays.getLength() > 0){
+      if (overlays.getLength() > 0) {
         overlays.forEach(ele => {
           this.map.removeOverlay(ele)
         })
       }
     },
-  
-    getColor(vaule) {
+
+    getColor (vaule) {
       let index = Math.ceil(vaule * this.colors.length / 300)
-      if(index < this.colors.length){
+      if (index < this.colors.length) {
         return this.colors[index - 1]
       } else {
         return this.colors(this.colors.length - 1)
       }
     },
-  
-    showLabel(feature) {
+
+    showLabel (feature) {
       let root = document.createElement('div')
       let valueEle = document.createElement('div')
       // let ectEle = document.createElement('div')
@@ -126,16 +126,16 @@ export default {
       })
       this.map.addOverlay(overlay)
     },
-  
-    labelIsExist(feature) {
+
+    labelIsExist (feature) {
       let id = feature.ol_uid
-      if(document.getElementById(id)){
+      if (document.getElementById(id)) {
         return true
-      }else{
+      } else {
         return false
       }
     }
-  },
+  }
 }
 </script>
 <style>
@@ -159,7 +159,6 @@ export default {
     border-radius: 0px 3px 3px 0px;
     color: #424242;
   }
-
 
   .ol-popup-name{
     margin-right: 30px;

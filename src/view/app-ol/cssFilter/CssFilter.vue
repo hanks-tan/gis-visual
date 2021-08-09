@@ -8,45 +8,44 @@
 </template>
 
 <script>
-  import MapView from '@/components/_public/MapView.vue'
-  export default {
-    data() {
-      return {
-        buttons: [
-          {id: 1, name: '反色', filterValue: 'invert'},
-          {id: 2, name: '褐色', filterValue: 'sepia'},
-          {id: 3, name: '灰度', filterValue: 'grayscale'},
-          {id: 4, name: '复合滤镜', filterValue: 'complex'},
-          {id: 5, name: '原色', filterValue: 'none'},
-        ],
-        filter: '',
-        map: null
-      }
-    },
-    mounted() {
-      this.init()
-    },
-    components: {MapView},
-    methods: {
-      init(){
-        
-        this.map = this.$refs['mapview'].map
+import MapView from '@/components/_public/MapView.vue'
+export default {
+  data () {
+    return {
+      buttons: [
+        { id: 1, name: '反色', filterValue: 'invert' },
+        { id: 2, name: '褐色', filterValue: 'sepia' },
+        { id: 3, name: '灰度', filterValue: 'grayscale' },
+        { id: 4, name: '复合滤镜', filterValue: 'complex' },
+        { id: 5, name: '原色', filterValue: 'none' }
+      ],
+      filter: '',
+      map: null
+    }
+  },
+  mounted () {
+    this.init()
+  },
+  components: { MapView },
+  methods: {
+    init () {
+      this.map = this.$refs['mapview'].map
 
-        let that = this
-        this.map.on('precompose', evt =>{
-          let ctx = evt.context;
-          if(ctx){
-            ctx.filter = that.filter;
-          }
-        })
-      },
-      changeFilter(type){
-        if(type !== 'none'){
-          type += '(100%)';
+      let that = this
+      this.map.on('precompose', evt => {
+        let ctx = evt.context
+        if (ctx) {
+          ctx.filter = that.filter
         }
-        this.filter = type;
-        this.map.render();
-      }
+      })
     },
+    changeFilter (type) {
+      if (type !== 'none') {
+        type += '(100%)'
+      }
+      this.filter = type
+      this.map.render()
+    }
   }
+}
 </script>

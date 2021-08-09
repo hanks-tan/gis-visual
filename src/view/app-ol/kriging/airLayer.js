@@ -1,6 +1,5 @@
 import kriging from './kriging.js'
-import GradientColor from '/src//util/color.js'
-import GeoJSON from 'ol/format/GeoJSON'
+import GradientColor from '../../../util//color'
 import Image from 'ol/layer/Image'
 import ImageCanvas from 'ol/source/ImageCanvas'
 
